@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Menu, Bell, Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun, Settings } from "lucide-react";
 import React from "react";
 
 const Navbar = ({
@@ -71,7 +71,7 @@ const Navbar = ({
             type="button"
             className="group flex items-center justify-center h-8 w-8 rounded-md border border-transparent hover:bg-purple-100 hover:border-purple-600 cursor-pointer"
           >
-            <Bell className="w-6 h-6 text-gray-800 group-hover:text-purple-600"></Bell>
+            <Settings className="w-6 h-6 text-gray-800 group-hover:text-purple-600" />
           </button>
           <span className="h-8 w-0.5 mx-2 bg-gray-300"></span>
           <div className="cursor-pointer h-8 w-8 rounded-full bg-purple-700 text-white flex items-center justify-center font-medium text-sm">

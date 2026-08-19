@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import FirearmListWidget from "@/components/firearms/FirearmsListWidget";
 import MaintenanceWidget from "@/components/firearms/MaintenanceWidget";
 import GunIcon from "@/components/icons/GunIcon";
+import ArsenalUsageWidget from "@/components/firearms/ArsenalUsageChart";
 
 export default async function FirearmsPage() {
   // 1. Fetch data on the server
@@ -37,6 +38,7 @@ export default async function FirearmsPage() {
         {/* Pass the fetched data directly into your new widget */}
         <FirearmListWidget firearms={firearms || []} />
         <MaintenanceWidget summary={summary || []} />
+        <ArsenalUsageWidget />
       </div>
     </div>
   );
