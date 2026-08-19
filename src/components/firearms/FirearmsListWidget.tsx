@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Receipt } from "lucide-react";
+import CustomWeaponIcon from "../icons/GunIcon";
 
 // 1. Update the interface to include image_url and the nested expenses array
 interface Firearm {
@@ -28,16 +29,19 @@ export default function FirearmListWidget({
   }, 0);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 flex flex-col gap-4 col-span-3 2xl:col-span-2">
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 flex flex-col gap-4 col-span-1 md:col-span-3 2xl:col-span-2 xl:row-span-2">
       {/* HEADER */}
       <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-        <div className="flex flex-col">
-          <h3 className="font-bold text-lg tracking-tight text-gray-900">
-            Arsenal Overview
-          </h3>
-          <span className="text-sm font-medium text-purple-600">
-            {firearms.length} Firearms
-          </span>
+        <div className="flex items-center gap-6">
+          <CustomWeaponIcon className="hidden md:block h-10 text-purple-600" />
+          <div className="flex flex-col">
+            <h3 className="font-bold text-lg tracking-tight text-gray-900">
+              Arsenal Overview
+            </h3>
+            <span className="text-sm font-medium text-purple-600">
+              {firearms.length} Firearms
+            </span>
+          </div>
         </div>
         <div className="text-right flex flex-col">
           <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">

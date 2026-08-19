@@ -1,39 +1,42 @@
 import { supabase } from "@/lib/supabase";
-import { Bell } from "lucide-react";
 import FirearmListWidget from "@/components/firearms/FirearmsListWidget";
+import MaintenanceWidget from "@/components/firearms/MaintenanceWidget";
+import GunIcon from "@/components/icons/GunIcon";
 
 export default async function FirearmsPage() {
   // 1. Fetch data on the server
-  const { data: firearms, error } = await supabase.from("firearms").select(`
-      *,
-      expenses (
-        total_cost
-      )
-    `);
+  const { data: firearms, error: firearmsError } = await supabase
+    .from("firearms")
+    .select(`*, expenses (total_cost)`);
 
-  if (error) {
-    return <div className="p-4 text-red-600">Error: {error.message}</div>;
+  const { data: summary, error: summaryError } = await supabase
+    .from("v_firearm_summary")
+    .select("*");
+
+  if (firearmsError || summaryError) {
+    return <div className="p-4 text-red-600">Error loading data.</div>;
   }
 
   // 2. Render the layout shell and pass data to the child components
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-row gap-2 items-center">
-        <Bell className="w-16 h-16"></Bell>
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-col sm:flex-row gap-1 sm:gap-6 items-center justify-center sm:justify-start">
+        <GunIcon className="w-16 h-16" />
+        <div className="flex flex-col items-center sm:items-baseline gap-1">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
             Firearms Management
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 text-center sm:text-left">
             Manage your arsenal, view values, and track maintenance.
           </p>
         </div>
       </div>
 
       {/* Grid Layout for Modular Components */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-3">
         {/* Pass the fetched data directly into your new widget */}
         <FirearmListWidget firearms={firearms || []} />
+        <MaintenanceWidget summary={summary || []} />
       </div>
     </div>
   );
