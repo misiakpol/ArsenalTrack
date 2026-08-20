@@ -3,6 +3,7 @@ import FirearmListWidget from "@/components/firearms/FirearmsListWidget";
 import MaintenanceWidget from "@/components/firearms/MaintenanceWidget";
 import GunIcon from "@/components/icons/GunIcon";
 import ArsenalUsageWidget from "@/components/firearms/ArsenalUsageChart";
+import AddFirearmModal from "@/components/firearms/AddFirearmModal";
 
 export default async function FirearmsPage() {
   // 1. Fetch data on the server
@@ -23,7 +24,7 @@ export default async function FirearmsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col sm:flex-row gap-1 sm:gap-6 items-center justify-center sm:justify-start">
         <GunIcon className="w-16 h-16" />
-        <div className="flex flex-col items-center sm:items-baseline gap-1">
+        <div className="flex flex-col items-center sm:items-baseline gap-1 mb-3 sm:mb-0">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
             Firearms Management
           </h2>
@@ -31,6 +32,7 @@ export default async function FirearmsPage() {
             Manage your arsenal, view values, and track maintenance.
           </p>
         </div>
+        <AddFirearmModal />
       </div>
 
       {/* Grid Layout for Modular Components */}

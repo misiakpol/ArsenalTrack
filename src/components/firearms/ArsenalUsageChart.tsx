@@ -84,7 +84,7 @@ export default function ArsenalTrendWidget() {
       {/* HEADER & CONTROLS */}
       <div className="flex flex-col justify-between gap-4 border-b border-gray-100 pb-3">
         <div className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-purple-600" />
+          <Activity className="h-5 w-5 text-purple-500" />
           <h3 className="font-bold text-lg tracking-tight text-gray-900">
             Ammunition Trend
           </h3>

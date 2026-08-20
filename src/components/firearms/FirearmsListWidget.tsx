@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Layers, Receipt } from "lucide-react";
+import FirearmActions from "./FirearmsActions";
 
 // 1. Update the interface to include image_url and the nested expenses array
 interface Firearm {
@@ -32,12 +33,12 @@ export default function FirearmListWidget({
       {/* HEADER */}
       <div className="flex items-center justify-between border-b border-gray-100 pb-3">
         <div className="flex items-center gap-4">
-          <Layers className="hidden md:block w-10 h-10 text-purple-600" />
+          <Layers className="hidden md:block w-10 h-10 text-purple-500" />
           <div className="flex flex-col">
             <h3 className="font-bold text-lg tracking-tight text-gray-900">
               Arsenal Overview
             </h3>
-            <span className="text-sm font-medium text-purple-600">
+            <span className="text-sm font-medium text-purple-500">
               {firearms.length} Firearms
             </span>
           </div>
@@ -64,7 +65,7 @@ export default function FirearmListWidget({
           return (
             <li
               key={gun.id}
-              className="group flex flex-col min-w-2xs items-center gap-2 hover:bg-gray-50 rounded-md transition-colors border border-transparent hover:border-gray-100"
+              className="group relative flex flex-col min-w-2xs items-center gap-2 hover:bg-gray-50 rounded-md transition-colors border border-transparent hover:border-gray-100"
             >
               {/* IMAGE DIV */}
               <div className="relative h-44 w-full shrink-0 flex items-center justify-center overflow-hidden">
@@ -103,6 +104,11 @@ export default function FirearmListWidget({
                 </span>
               </div>
               <div className="flex items-center gap-4 p-3"></div>
+
+              {/* MODIFICATION ICON */}
+              <div className="absolute top-3 right-3">
+                <FirearmActions firearm={gun} />
+              </div>
             </li>
           );
         })}
