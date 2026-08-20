@@ -48,17 +48,35 @@ export default function Sidebar({
     localStorage.setItem("sidebarExpanded", JSON.stringify(newState));
   };
 
+  const handleLinkClick = () => {
+    // 1. Close the mobile drawer if it's open
+    if (isOpen) {
+      setIsOpen(false);
+    }
+    // 2. Collapse the desktop overlay if it's expanded
+    if (isExpanded) {
+      setIsExpanded(false);
+      localStorage.setItem("sidebarExpanded", JSON.stringify(false));
+    }
+  };
+
   if (!mounted) {
     return (
-      <aside className="hidden md:flex flex-col w-16 border-r border-gray-200 min-h-screen"></aside>
+      <>
+        {/* The Phantom Spacer */}
+        <div className="hidden md:block w-16 shrink-0 h-full"></div>
+        {/* The Fixed Sidebar Shell */}
+        <aside className="hidden md:flex flex-col fixed top-0 left-0 z-50 w-16 bg-white border-r border-gray-200 h-full"></aside>
+      </>
     );
   }
   return (
     <>
+      <div className="hidden md:block w-16 shrink-0 h-full"></div>
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 px-2 flex flex-col bg-white border-r border-gray-200 min-h-screen transition-all duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 px-2 flex flex-col bg-white border-r border-gray-200 h-full transition-all duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        } ${isExpanded ? "w-64" : "w-64 md:w-16"}`}
+        } ${isExpanded ? "w-64 shadow-xl" : "w-64 md:w-16"}`}
       >
         {/* Brand / Logo */}
         <div className="flex items-center justify-center h-16 gap-2 py-4 mb-4">
@@ -89,6 +107,7 @@ export default function Sidebar({
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={handleLinkClick}
                 className={`group flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                   isActive
                     ? "bg-purple-100 text-purple-700"

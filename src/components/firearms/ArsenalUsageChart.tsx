@@ -79,6 +79,8 @@ export default function ArsenalTrendWidget() {
     fetchTrendData();
   }, [grain]); // Re-fetch the data from PostgreSQL every time the dropdown changes
 
+  const showLabels = chartData.length <= 12;
+
   return (
     <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4 sm:p-5 flex flex-col col-span-1 sm:col-span-2 gap-4 h-full min-h-100">
       {/* HEADER & CONTROLS */}
@@ -215,12 +217,16 @@ export default function ArsenalTrendWidget() {
                   stroke="#9810fa"
                   strokeWidth={2}
                   fill="url(#colorCumulative)"
-                  label={{
-                    position: "top",
-                    fill: "#a855f7",
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
+                  label={
+                    showLabels
+                      ? {
+                          position: "top",
+                          fill: "#a855f7",
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }
+                      : false // <-- Turns off label when crowded
+                  }
                 />
               ) : (
                 <Area
@@ -231,12 +237,16 @@ export default function ArsenalTrendWidget() {
                   stroke="#3b82f6"
                   strokeWidth={2}
                   fill="url(#colorAmmo)"
-                  label={{
-                    position: "top",
-                    fill: "#3b82f6",
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
+                  label={
+                    showLabels
+                      ? {
+                          position: "top",
+                          fill: "#3b82f6",
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }
+                      : false // <-- Turns off label when crowded
+                  }
                 />
               )}
             </AreaChart>
