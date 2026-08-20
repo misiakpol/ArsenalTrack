@@ -34,25 +34,25 @@ const Navbar = ({
         />
       )}
 
-      <div className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white backdrop-blur px-4 sm:px-6">
+      <div className="sticky shrink-0 top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white backdrop-blur px-4 sm:px-6">
         {/* LEFT SIDE */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-gray-800"
+            className="md:hidden text-gray-800 shrink-0"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
-          <h1 className="flex items-center leading-none uppercase font-semibold text-gray-800 md:hidden">
-            Arsenal<span className=" font-bold text-purple-600">Track</span>
+          <h1 className="flex items-center leading-none text-lg sm:text-xl tracking-tight uppercase font-semibold text-gray-800 md:hidden shrink-0">
+            Arsenal<span className="font-bold text-purple-600">Track</span>
           </h1>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex items-center gap-1 sm:gap-3 ml-auto">
+        <div className="flex items-center gap-1 sm:gap-3 ml-auto shrink-0">
           <button
             type="button"
             // Removed the extra 'hover:border' at the end to fix the iOS mobile tap bug

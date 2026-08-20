@@ -12,9 +12,12 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="light flex bg-gray-50 text-gray-900 w-full min-h-screen">
+    // 1. CHANGED: min-h-screen to h-screen and added overflow-hidden
+    <div className="light flex bg-gray-50 text-gray-900 w-full h-screen overflow-hidden">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-      <main className="flex-1 flex-col min-w-0 h-max bg-gray-50">
+
+      {/* 2. CHANGED: Added flex, h-full, and overflow-y-auto. Removed h-max. */}
+      <main className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto bg-gray-50">
         <Navbar
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
