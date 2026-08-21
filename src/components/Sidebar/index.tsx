@@ -12,12 +12,13 @@ import {
   ChevronRight,
   BowArrow,
 } from "lucide-react";
+import GunIcon from "../icons/GunIcon";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Range Sessions", href: "/dashboard/sessions", icon: Crosshair },
   { name: "Expenses", href: "/dashboard/expenses", icon: Receipt },
-  { name: "Firearms", href: "/dashboard/firearms", icon: BowArrow },
+  { name: "Firearms", href: "/dashboard/firearms", icon: GunIcon },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
