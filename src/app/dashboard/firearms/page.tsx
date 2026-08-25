@@ -22,8 +22,9 @@ export default async function FirearmsPage() {
   // 2. Render the layout shell and pass data to the child components
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col sm:flex-row gap-1 sm:gap-6 items-center justify-center sm:justify-start">
-        <GunIcon className="w-16 h-16" />
+      <div className="flex flex-col sm:flex-row gap-1 sm:gap-6 items-center justify-center sm:justify-between">
+        <div className="flex items-center gap-4">
+        <GunIcon className="w-10 h-10 text-purple-500 " />
         <div className="flex flex-col items-center sm:items-baseline gap-1 mb-3 sm:mb-0">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
             Firearms Management
@@ -31,6 +32,7 @@ export default async function FirearmsPage() {
           <p className="text-sm text-gray-500 text-center sm:text-left">
             Manage your arsenal, view values, and track maintenance.
           </p>
+        </div>
         </div>
         <AddFirearmModal />
       </div>

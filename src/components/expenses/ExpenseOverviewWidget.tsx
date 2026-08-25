@@ -2,9 +2,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Receipt, CreditCard, Calendar, Target, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { Timeframe } from "@/app/dashboard/expenses/page";
 
-export default function ExpenseOverviewWidget() {
-  const [timeframe, setTimeframe] = useState<"month" | "year">("month");
+interface ExpenseOverviewWidgetProps {
+  timeframe: Timeframe;
+  setTimeframe: (t: Timeframe) => void;
+}
+
+export default function ExpenseOverviewWidget({ timeframe, setTimeframe }: ExpenseOverviewWidgetProps) {
   const [expenses, setExpenses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,8 +45,14 @@ export default function ExpenseOverviewWidget() {
       const d = new Date(exp.expense_date);
       if (timeframe === "month") {
         return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      } else {
+      } else if (timeframe === "last_month") {
+        const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+        const lastYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+        return d.getMonth() === lastMonth && d.getFullYear() === lastYear;
+      } else if (timeframe === "year") {
         return d.getFullYear() === now.getFullYear();
+      } else {
+        return true;
       }
     });
 
@@ -53,8 +64,14 @@ export default function ExpenseOverviewWidget() {
         const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
         const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
         return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
-      } else {
+      } else if (timeframe === "last_month") {
+        const prevMonth = now.getMonth() <= 1 ? 12 - (2 - now.getMonth()) : now.getMonth() - 2;
+        const prevYear = now.getMonth() <= 1 ? now.getFullYear() - 1 : now.getFullYear();
+        return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+      } else if (timeframe === "year") {
         return d.getFullYear() === now.getFullYear() - 1;
+      } else {
+        return false;
       }
     });
 
@@ -80,16 +97,16 @@ export default function ExpenseOverviewWidget() {
       total: currStats.total,
       transactions: currStats.transactions,
       avgSpent: currStats.avgSpent,
-      totalTrend: getTrend(currStats.total, prevStats.total),
-      transTrend: getTrend(currStats.transactions, prevStats.transactions),
+      totalTrend: timeframe === "all" ? "-" : getTrend(currStats.total, prevStats.total),
+      transTrend: timeframe === "all" ? "-" : getTrend(currStats.transactions, prevStats.transactions),
     };
   }, [expenses, timeframe]);
 
-  const budgetThreshold = timeframe === "month" ? 500 : 6000;
-  const remainingBudget = budgetThreshold - kpiData.total;
+  const budgetThreshold = timeframe === "month" || timeframe === "last_month" ? 500 : timeframe === "year" ? 6000 : 99999;
+  const remainingBudget = timeframe === "all" ? null : budgetThreshold - kpiData.total;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-5 h-full col-span-3 relative">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-5 h-full col-span-1 md:col-span-2 lg:col-span-3 relative">
       {/* Loading overlay */}
       {isLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-xl border border-transparent">
@@ -104,11 +121,13 @@ export default function ExpenseOverviewWidget() {
         </h3>
         <select
           value={timeframe}
-          onChange={(e) => setTimeframe(e.target.value as "month" | "year")}
+          onChange={(e) => setTimeframe(e.target.value as Timeframe)}
           className="text-sm border border-gray-200 bg-gray-50 text-gray-700 rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-purple-600 focus:outline-none cursor-pointer"
         >
           <option value="month">This Month</option>
+          <option value="last_month">Last Month</option>
           <option value="year">This Year</option>
+          <option value="all">All Time</option>
         </select>
       </div>
 
@@ -191,13 +210,15 @@ export default function ExpenseOverviewWidget() {
             </span>
             <div className="flex items-center gap-2">
               <span
-                className={`text-xl font-bold ${remainingBudget < 0 ? "text-red-600" : "text-gray-900"}`}
+                className={`text-xl font-bold ${remainingBudget !== null && remainingBudget < 0 ? "text-red-600" : "text-gray-900"}`}
               >
-                {remainingBudget.toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
+                {timeframe === "all"
+                  ? "N/A"
+                  : `${remainingBudget?.toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł`}
               </span>
             </div>
             <span className="text-xs text-gray-500 font-medium">
-              Of {budgetThreshold.toLocaleString("pl-PL")} zł limit
+              {timeframe === "all" ? "No limit for All Time" : `Of ${budgetThreshold.toLocaleString("pl-PL")} zł limit`}
             </span>
           </div>
         </div>
