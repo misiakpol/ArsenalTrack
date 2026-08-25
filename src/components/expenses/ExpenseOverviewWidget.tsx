@@ -1,34 +1,102 @@
 "use client";
-import React, { useState } from "react";
-import { Receipt, CreditCard, Calendar, Target } from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Receipt, CreditCard, Calendar, Target, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function ExpenseOverviewWidget() {
   const [timeframe, setTimeframe] = useState<"month" | "year">("month");
+  const [expenses, setExpenses] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Frontend Budget Thresholds & Dummy Data
-  const budgetThreshold = timeframe === "month" ? 2000 : 24000;
+  // Fetch real data from Supabase on mount
+  useEffect(() => {
+    async function fetchExpenses() {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from("expenses")
+        .select("total_cost, expense_date");
+        
+      if (!error && data) {
+        setExpenses(data);
+      } else if (error) {
+        console.error("Error fetching expenses:", error);
+      }
+      setIsLoading(false);
+    }
+    
+    fetchExpenses();
+    
+    window.addEventListener("expenseAdded", fetchExpenses);
+    return () => window.removeEventListener("expenseAdded", fetchExpenses);
+  }, []);
 
-  const kpiData = {
-    month: {
-      total: 1250,
-      transactions: 8,
-      avgSpent: 410,
-      totalTrend: "+30.2%",
-      transTrend: "-2.1%",
-    },
-    year: {
-      total: 14500,
-      transactions: 94,
-      avgSpent: 390,
-      totalTrend: "+15.4%",
-      transTrend: "+8.3%",
-    },
-  };
+  // Calculate stats dynamically based on fetched data
+  const kpiData = useMemo(() => {
+    const now = new Date();
+    
+    // 1. Filter expenses for the current timeframe
+    const currentExpenses = expenses.filter(exp => {
+      if (!exp.expense_date) return false;
+      const d = new Date(exp.expense_date);
+      if (timeframe === "month") {
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      } else {
+        return d.getFullYear() === now.getFullYear();
+      }
+    });
 
-  const current = kpiData[timeframe];
-  const remainingBudget = budgetThreshold - current.total;
+    // 2. Filter expenses for the previous timeframe (for trends)
+    const prevExpenses = expenses.filter(exp => {
+      if (!exp.expense_date) return false;
+      const d = new Date(exp.expense_date);
+      if (timeframe === "month") {
+        const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+        const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+        return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+      } else {
+        return d.getFullYear() === now.getFullYear() - 1;
+      }
+    });
+
+    // Helper to calculate totals for a given dataset
+    const calcStats = (data: any[]) => {
+      const total = data.reduce((sum, item) => sum + (Number(item.total_cost) || 0), 0);
+      const transactions = data.length;
+      const avgSpent = transactions > 0 ? total / transactions : 0;
+      return { total, transactions, avgSpent };
+    };
+
+    const currStats = calcStats(currentExpenses);
+    const prevStats = calcStats(prevExpenses);
+
+    // Helper to calculate percentage trend
+    const getTrend = (curr: number, prev: number) => {
+      if (prev === 0) return curr > 0 ? "+100%" : "0%";
+      const pct = ((curr - prev) / prev) * 100;
+      return (pct > 0 ? "+" : "") + pct.toFixed(1) + "%";
+    };
+
+    return {
+      total: currStats.total,
+      transactions: currStats.transactions,
+      avgSpent: currStats.avgSpent,
+      totalTrend: getTrend(currStats.total, prevStats.total),
+      transTrend: getTrend(currStats.transactions, prevStats.transactions),
+    };
+  }, [expenses, timeframe]);
+
+  const budgetThreshold = timeframe === "month" ? 500 : 6000;
+  const remainingBudget = budgetThreshold - kpiData.total;
+
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-5 h-full col-span-3">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-5 h-full col-span-3 relative">
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-sm rounded-xl border border-transparent">
+          <Loader2 className="h-8 w-8 text-purple-600 animate-spin" />
+        </div>
+      )}
+
       {/* HEADER & DROPDOWN */}
       <div className="flex items-center justify-between border-b border-gray-100 pb-3">
         <h3 className="font-bold text-lg tracking-tight text-gray-900">
@@ -45,10 +113,9 @@ export default function ExpenseOverviewWidget() {
       </div>
 
       {/* KPI GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 justify-between gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 justify-between gap-4">
         {/* Total Expenses */}
-
-        <div className="grid grid-cols-[40%_60%] lg:justify-start items-center gap-3 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
+        <div className="grid grid-cols-[30%_70%] lg:justify-start items-center gap-5 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
           <div className="justify-self-end p-4 bg-purple-100 rounded-full shrink-0 border-purple-600 border">
             <Receipt className="h-10 w-10 text-purple-600" />
           </div>
@@ -58,10 +125,10 @@ export default function ExpenseOverviewWidget() {
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold text-gray-900">
-                {current.total.toLocaleString("pl-PL")} zł
+                {kpiData.total.toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
               </span>
-              <span className="text-xs font-semibold text-red-700">
-                {current.totalTrend}
+              <span className={`text-xs font-semibold ${kpiData.totalTrend.startsWith('+') && kpiData.totalTrend !== '+0.0%' ? 'text-red-700' : 'text-green-700'}`}>
+                {kpiData.totalTrend}
               </span>
             </div>
             <span className="text-xs text-gray-500 font-medium">
@@ -71,7 +138,7 @@ export default function ExpenseOverviewWidget() {
         </div>
 
         {/* Transactions */}
-        <div className="grid grid-cols-[40%_60%] lg:justify-start items-center gap-3 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
+        <div className="grid grid-cols-[30%_70%] lg:justify-start items-center gap-5 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
           <div className="justify-self-end p-4 bg-blue-100/50 rounded-full shrink-0 border-blue-600 border">
             <CreditCard className="h-10 w-10 text-blue-600" />
           </div>
@@ -81,10 +148,10 @@ export default function ExpenseOverviewWidget() {
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold text-gray-900">
-                {current.transactions}
+                {kpiData.transactions}
               </span>
-              <span className="text-xs font-semibold text-green-700">
-                {current.transTrend}
+              <span className={`text-xs font-semibold ${kpiData.transTrend.startsWith('+') && kpiData.transTrend !== '+0.0%' ? 'text-red-700' : 'text-green-700'}`}>
+                {kpiData.transTrend}
               </span>
             </div>
             <span className="text-xs text-gray-500 font-medium">
@@ -94,7 +161,7 @@ export default function ExpenseOverviewWidget() {
         </div>
 
         {/* Avg Spent */}
-        <div className="grid grid-cols-[40%_60%] lg:justify-start items-center gap-3 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
+        <div className="grid grid-cols-[30%_70%] lg:justify-start items-center gap-5 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
           <div className="justify-self-end p-4 bg-green-100/50 rounded-full shrink-0 border-green-600 border">
             <Calendar className="h-10 w-10 text-green-600" />
           </div>
@@ -104,7 +171,7 @@ export default function ExpenseOverviewWidget() {
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold text-gray-900">
-                {current.avgSpent.toLocaleString("pl-PL")} zł
+                {kpiData.avgSpent.toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
               </span>
             </div>
             <span className="text-xs text-gray-500 font-medium">
@@ -114,7 +181,7 @@ export default function ExpenseOverviewWidget() {
         </div>
 
         {/* Remaining Budget */}
-        <div className="grid grid-cols-[40%_60%] lg:justify-start items-center gap-3 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
+        <div className="grid grid-cols-[30%_70%] lg:justify-start items-center gap-5 border border-gray-200 bg-gray-50/50 rounded-md py-6 px-4">
           <div className="justify-self-end p-4 bg-orange-100/50 rounded-full shrink-0 border-orange-600 border">
             <Target className="h-10 w-10 text-orange-600" />
           </div>
@@ -126,7 +193,7 @@ export default function ExpenseOverviewWidget() {
               <span
                 className={`text-xl font-bold ${remainingBudget < 0 ? "text-red-600" : "text-gray-900"}`}
               >
-                {remainingBudget.toLocaleString("pl-PL")} zł
+                {remainingBudget.toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł
               </span>
             </div>
             <span className="text-xs text-gray-500 font-medium">
