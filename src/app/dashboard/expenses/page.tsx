@@ -16,7 +16,7 @@ export default function ExpensesPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* HEADER */}
-      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+      <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:px-3">
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <Wallet className="h-10 w-10 text-purple-500" />
           <div className="flex flex-col gap-1">

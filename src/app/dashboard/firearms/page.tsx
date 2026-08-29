@@ -22,8 +22,8 @@ export default async function FirearmsPage() {
   // 2. Render the layout shell and pass data to the child components
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col items-center justify-center gap-1 sm:flex-row sm:justify-between sm:gap-6">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col items-center justify-center gap-1 sm:flex-row sm:justify-between sm:gap-6 sm:px-3">
+        <div className="flex flex-col items-center gap-4 sm:flex-row">
           <GunIcon className="h-10 w-10 text-purple-500" />
           <div className="mb-3 flex flex-col items-center gap-1 sm:mb-0 sm:items-baseline">
             <h2 className="text-2xl font-bold tracking-tight text-gray-900">
