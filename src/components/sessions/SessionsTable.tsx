@@ -49,7 +49,7 @@ export default function SessionsTable({ logs, onDelete }: SessionsTableProps) {
                     <TableCell className="font-medium" suppressHydrationWarning>
                       {new Date(log.session_date).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>{log.firearm_id}</TableCell>
+                    <TableCell>{log.firearms?.name || log.firearm_id}</TableCell>
                     <TableCell>{log.rounds_fired}</TableCell>
                     <TableCell className="text-right">
                       <Button

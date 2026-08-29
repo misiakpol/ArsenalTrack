@@ -1,42 +1,74 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Crosshair, Plus } from "lucide-react";
 import AddSessionModal from "@/components/sessions/AddSessionModal";
 import SessionsTable from "@/components/sessions/SessionsTable";
-import { ShootingLog } from "@/types";
-
-// Initial mock data
-const initialLogs: ShootingLog[] = [
-  {
-    id: "1",
-    firearm_id: "Glock 19", // mocking as string name for display
-    session_date: "2026-08-28",
-    rounds_fired: 150,
-    created_at: "2026-08-28T10:00:00Z",
-  },
-  {
-    id: "2",
-    firearm_id: "AR-15",
-    session_date: "2026-08-20",
-    rounds_fired: 300,
-    created_at: "2026-08-20T14:30:00Z",
-  },
-];
+import TrainingLogsTable from "@/components/sessions/TrainingLogsTable";
+import { ShootingLog, TrainingLog } from "@/types";
+import { supabase } from "@/lib/supabaseClient";
 
 const Sessions = () => {
-  const [logs, setLogs] = useState<ShootingLog[]>(initialLogs);
+  const [shootingLogs, setShootingLogs] = useState<ShootingLog[]>([]);
+  const [trainingLogs, setTrainingLogs] = useState<TrainingLog[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleAddSession = (newLog: ShootingLog, trainingLogs?: any[]) => {
-    setLogs([...logs, newLog]);
-    if (trainingLogs && trainingLogs.length > 0) {
-      console.log("Mock Training Logs created:", trainingLogs);
+  useEffect(() => {
+    const fetchLogs = async () => {
+      setIsLoading(true);
+      
+      const { data: sLogs, error: sError } = await supabase
+        .from('shooting_logs')
+        .select(`
+          *,
+          firearms ( name )
+        `)
+        .order('session_date', { ascending: false })
+        .limit(10);
+        
+      if (!sError && sLogs) {
+        setShootingLogs(sLogs);
+      } else {
+        console.error("Error fetching shooting logs:", sError);
+      }
+
+      const { data: tLogs, error: tError } = await supabase
+        .from('training_logs')
+        .select(`
+          *,
+          firearms ( name )
+        `)
+        .order('session_date', { ascending: false })
+        .limit(10);
+        
+      if (!tError && tLogs) {
+        setTrainingLogs(tLogs);
+      } else {
+        console.error("Error fetching training logs:", tError);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchLogs();
+  }, []);
+
+  const handleAddSession = (newLog: ShootingLog, newTrainingLogs?: TrainingLog[]) => {
+    setShootingLogs((prev) => [newLog, ...prev].slice(0, 10));
+    if (newTrainingLogs && newTrainingLogs.length > 0) {
+      setTrainingLogs((prev) => [...newTrainingLogs, ...prev].slice(0, 10));
     }
   };
 
-  const handleDelete = (id: string) => {
-    setLogs(logs.filter(log => log.id !== id));
+  const handleDeleteShootingLog = async (id: string) => {
+    setShootingLogs((prev) => prev.filter(log => log.id !== id));
+    await supabase.from('shooting_logs').delete().eq('id', id);
+  };
+
+  const handleDeleteTrainingLog = async (id: string) => {
+    setTrainingLogs((prev) => prev.filter(log => log.id !== id));
+    await supabase.from('training_logs').delete().eq('id', id);
   };
 
   return (
@@ -64,7 +96,14 @@ const Sessions = () => {
           </button>
         </div>
 
-        <SessionsTable logs={logs} onDelete={handleDelete} />
+        {isLoading ? (
+          <div className="text-center py-10 text-gray-500">Loading logs...</div>
+        ) : (
+          <>
+            <SessionsTable logs={shootingLogs} onDelete={handleDeleteShootingLog} />
+            <TrainingLogsTable logs={trainingLogs} onDelete={handleDeleteTrainingLog} />
+          </>
+        )}
         
         <AddSessionModal 
           isOpen={isDialogOpen} 
