@@ -35,7 +35,7 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete ${firearm.name}? This will also delete related expenses and logs.`,
+        `Are you sure you want to delete ${firearm.name}? This will also delete related expenses and logs.`
       )
     )
       return;
@@ -103,7 +103,7 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
       {/* Action Buttons */}
       <button
         onClick={() => setIsEditOpen(true)}
-        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+        className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
         title="Edit Firearm"
       >
         <Pencil className="h-4 w-4" />
@@ -112,7 +112,7 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
       <button
         onClick={handleDelete}
         disabled={isDeleting}
-        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
+        className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
         title="Delete Firearm"
       >
         {isDeleting ? (
@@ -124,10 +124,10 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
 
       {/* Edit Modal */}
       {isEditOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-left">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h3 className="font-bold text-lg text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
+          <div className="animate-in fade-in zoom-in-95 w-full max-w-md overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-xl duration-200">
+            <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-5 py-4">
+              <h3 className="text-lg font-bold text-gray-900">
                 Edit {firearm.name}
               </h3>
               <button
@@ -140,7 +140,7 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
 
             <form
               onSubmit={handleUpdate}
-              className="p-5 flex flex-col gap-4 max-h-[80vh] overflow-y-auto"
+              className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5"
             >
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">
@@ -148,10 +148,10 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:bg-gray-50 hover:border-purple-400 hover:text-purple-600 cursor-pointer"
+                  className="flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-500 hover:border-purple-400 hover:bg-gray-50 hover:text-purple-600"
                 >
-                  <UploadCloud className="h-6 w-6 mb-1" />
-                  <span className="text-xs font-medium px-2">
+                  <UploadCloud className="mb-1 h-6 w-6" />
+                  <span className="px-2 text-xs font-medium">
                     {imageFile ? imageFile.name : "Click to replace image"}
                   </span>
                 </div>
@@ -177,7 +177,7 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-gray-900"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-purple-500"
                 />
               </div>
 
@@ -191,7 +191,7 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
                   onChange={(e) =>
                     setFormData({ ...formData, caliber: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-gray-900"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="" disabled>
                     Select caliber...
@@ -218,22 +218,22 @@ export default function FirearmActions({ firearm }: { firearm: any }) {
                   onChange={(e) =>
                     setFormData({ ...formData, purchase_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 text-gray-900"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:ring-2 focus:ring-purple-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+              <div className="mt-4 flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg"
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

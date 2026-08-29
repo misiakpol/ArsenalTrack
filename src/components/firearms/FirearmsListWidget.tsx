@@ -23,19 +23,19 @@ export default function FirearmListWidget({
   const grandTotal = firearms.reduce((total, gun) => {
     const gunTotal = gun.expenses.reduce(
       (sum, exp) => sum + Number(exp.total_cost),
-      0,
+      0
     );
     return total + gunTotal;
   }, 0);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 flex flex-col gap-4 col-span-1 md:col-span-3 2xl:col-span-2 xl:row-span-2">
+    <div className="col-span-1 flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-5 shadow-sm md:col-span-3 xl:row-span-2 2xl:col-span-2">
       {/* HEADER */}
       <div className="flex items-center justify-between border-b border-gray-100 pb-3">
         <div className="flex items-center gap-4">
-          <Layers className="hidden md:block w-10 h-10 text-purple-500" />
+          <Layers className="hidden h-10 w-10 text-purple-500 md:block" />
           <div className="flex flex-col">
-            <h3 className="font-bold text-lg tracking-tight text-gray-900">
+            <h3 className="text-lg font-bold tracking-tight text-gray-900">
               Arsenal Overview
             </h3>
             <span className="text-sm font-medium text-purple-500">
@@ -43,8 +43,8 @@ export default function FirearmListWidget({
             </span>
           </div>
         </div>
-        <div className="text-right flex flex-col">
-          <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">
+        <div className="flex flex-col text-right">
+          <span className="text-xs font-semibold tracking-wider text-gray-500 uppercase">
             Total Value
           </span>
           <span className="font-bold text-gray-900">
@@ -59,16 +59,16 @@ export default function FirearmListWidget({
           // Calculate individual firearm cost
           const gunCost = gun.expenses.reduce(
             (sum, exp) => sum + Number(exp.total_cost),
-            0,
+            0
           );
 
           return (
             <li
               key={gun.id}
-              className="group relative flex flex-col min-w-2xs items-center gap-2 hover:bg-gray-50 rounded-md transition-colors border border-transparent hover:border-gray-100"
+              className="group relative flex min-w-2xs flex-col items-center gap-2 rounded-md border border-transparent transition-colors hover:border-gray-100 hover:bg-gray-50"
             >
               {/* IMAGE DIV */}
-              <div className="relative h-44 w-full shrink-0 flex items-center justify-center overflow-hidden">
+              <div className="relative flex h-44 w-full shrink-0 items-center justify-center overflow-hidden">
                 {gun.image_url ? (
                   <Image
                     src={gun.image_url}
@@ -79,25 +79,25 @@ export default function FirearmListWidget({
                     priority={index < 4}
                   />
                 ) : (
-                  <span className="text-xs text-gray-400 font-medium">IMG</span>
+                  <span className="text-xs font-medium text-gray-400">IMG</span>
                 )}
               </div>
               {/* DETAILS DIV */}
-              <div className="flex flex-col grow min-w-0 justify-center items-center">
-                <span className="text-xl font-bold text-gray-900 truncate leading-tight">
+              <div className="flex min-w-0 grow flex-col items-center justify-center">
+                <span className="truncate text-xl leading-tight font-bold text-gray-900">
                   {gun.name}
                 </span>
-                <span className="flex items-center gap-1.5 text-sm text-gray-500 mt-0.5">
+                <span className="mt-0.5 flex items-center gap-1.5 text-sm text-gray-500">
                   <span>{gun.type}</span>
-                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span className="h-1 w-1 rounded-full bg-gray-300"></span>
                   <span>{gun.platform}</span>
-                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span className="h-1 w-1 rounded-full bg-gray-300"></span>
                   <span className="font-medium">{gun.caliber}</span>
                 </span>
               </div>
 
               {/* COST DIV */}
-              <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 px-2.5 py-1.5 rounded-md border border-gray-100 group-hover:bg-gray-100">
+              <div className="flex shrink-0 items-center gap-1.5 rounded-md border border-gray-100 bg-gray-50 px-2.5 py-1.5 group-hover:bg-gray-100">
                 <Receipt className="h-5 w-5 text-purple-600" />
                 <span className="text-md font-semibold text-gray-800">
                   {gunCost.toLocaleString("pl-PL")} zł
@@ -114,7 +114,7 @@ export default function FirearmListWidget({
         })}
 
         {firearms.length === 0 && (
-          <div className="text-sm text-gray-500 italic py-4 text-center">
+          <div className="py-4 text-center text-sm text-gray-500 italic">
             No firearms found in the armory.
           </div>
         )}

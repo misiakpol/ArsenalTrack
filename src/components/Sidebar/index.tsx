@@ -65,25 +65,25 @@ export default function Sidebar({
     return (
       <>
         {/* The Phantom Spacer */}
-        <div className="hidden md:block w-16 shrink-0 h-full"></div>
+        <div className="hidden h-full w-16 shrink-0 md:block"></div>
         {/* The Fixed Sidebar Shell */}
-        <aside className="hidden md:flex flex-col fixed top-0 left-0 z-50 w-16 bg-white border-r border-gray-200 h-full"></aside>
+        <aside className="fixed top-0 left-0 z-50 hidden h-full w-16 flex-col border-r border-gray-200 bg-white md:flex"></aside>
       </>
     );
   }
   return (
     <>
-      <div className="hidden md:block w-16 shrink-0 h-full"></div>
+      <div className="hidden h-full w-16 shrink-0 md:block"></div>
       <aside
-        className={`fixed inset-y-0 left-0 z-50 px-2 flex flex-col bg-white border-r border-gray-200 h-full transition-all duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r border-gray-200 bg-white px-2 transition-all duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         } ${isExpanded ? "w-64 shadow-xl" : "w-64 md:w-16"}`}
       >
         {/* Brand / Logo */}
-        <div className="flex items-center justify-center h-16 gap-2 py-4 mb-4">
+        <div className="mb-4 flex h-16 items-center justify-center gap-2 py-4">
           <button
             onClick={toggleSidebar}
-            className="hidden md:block p-1 rounded-md text-gray-500 hover:bg-purple-50 hover:text-purple-600"
+            className="hidden rounded-md p-1 text-gray-500 hover:bg-purple-50 hover:text-purple-600 md:block"
           >
             {isExpanded ? (
               <ChevronLeft size={24} />
@@ -92,9 +92,9 @@ export default function Sidebar({
             )}
           </button>
           <span
-            className={`flex items-center leading-none text-lg uppercase font-semibold text-gray-800 ${isExpanded ? "" : "md:hidden"}`}
+            className={`flex items-center text-lg leading-none font-semibold text-gray-800 uppercase ${isExpanded ? "" : "md:hidden"}`}
           >
-            Arsenal<span className="text-purple-600 font-bold">Track</span>
+            Arsenal<span className="font-bold text-purple-600">Track</span>
           </span>
         </div>
 
@@ -109,10 +109,10 @@ export default function Sidebar({
                 key={item.name}
                 href={item.href}
                 onClick={handleLinkClick}
-                className={`group flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-purple-100 text-purple-700"
-                    : "text-gray-600 hover:text-gray-500 hover:bg-gray-100"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-500"
                 }`}
               >
                 <Icon
@@ -123,10 +123,10 @@ export default function Sidebar({
                   }`}
                 />
                 <span
-                  className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                  className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
                     isExpanded
-                      ? "w-auto opacity-100 ml-3"
-                      : "w-auto opacity-100 ml-3 md:hidden md:w-0 md:opacity-0"
+                      ? "ml-3 w-auto opacity-100"
+                      : "ml-3 w-auto opacity-100 md:hidden md:w-0 md:opacity-0"
                   }`}
                 >
                   {item.name}

@@ -34,47 +34,47 @@ const Navbar = ({
         />
       )}
 
-      <div className="sticky shrink-0 top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white backdrop-blur px-4 sm:px-6">
+      <div className="sticky top-0 z-30 flex h-16 w-full shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 backdrop-blur sm:px-6">
         {/* LEFT SIDE */}
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-gray-800 shrink-0"
+            className="shrink-0 text-gray-800 md:hidden"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
-          <h1 className="flex items-center leading-none text-lg sm:text-xl tracking-tight uppercase font-semibold text-gray-800 md:hidden shrink-0">
+          <h1 className="flex shrink-0 items-center text-lg leading-none font-semibold tracking-tight text-gray-800 uppercase sm:text-xl md:hidden">
             Arsenal<span className="font-bold text-purple-600">Track</span>
           </h1>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex items-center gap-1 sm:gap-3 ml-auto shrink-0">
+        <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
           <button
             type="button"
             // Removed the extra 'hover:border' at the end to fix the iOS mobile tap bug
-            className="group flex items-center justify-center h-8 w-8 rounded-md border border-transparent hover:bg-purple-100 hover:border-purple-600 cursor-pointer"
+            className="group flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-transparent hover:border-purple-600 hover:bg-purple-100"
             onClick={toggleTheme}
           >
             {/* Swapped Moon and Sun so it makes logical visual sense */}
             {mounted && resolvedTheme === "dark" ? (
-              <Sun className="w-6 h-6 text-gray-800 group-hover:text-purple-600"></Sun>
+              <Sun className="h-6 w-6 text-gray-800 group-hover:text-purple-600"></Sun>
             ) : (
-              <Moon className="w-6 h-6 text-gray-800 group-hover:text-purple-600"></Moon>
+              <Moon className="h-6 w-6 text-gray-800 group-hover:text-purple-600"></Moon>
             )}
           </button>
 
           <button
             type="button"
-            className="group flex items-center justify-center h-8 w-8 rounded-md border border-transparent hover:bg-purple-100 hover:border-purple-600 cursor-pointer"
+            className="group flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-transparent hover:border-purple-600 hover:bg-purple-100"
           >
-            <Settings className="w-6 h-6 text-gray-800 group-hover:text-purple-600" />
+            <Settings className="h-6 w-6 text-gray-800 group-hover:text-purple-600" />
           </button>
-          <span className="h-8 w-0.5 mx-2 bg-gray-300"></span>
-          <div className="cursor-pointer h-8 w-8 rounded-full bg-purple-700 text-white flex items-center justify-center font-medium text-sm">
+          <span className="mx-2 h-8 w-0.5 bg-gray-300"></span>
+          <div className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-purple-700 text-sm font-medium text-white">
             U
           </div>
         </div>

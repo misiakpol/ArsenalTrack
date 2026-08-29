@@ -31,7 +31,7 @@ const scale = (invert) =>
     Object.entries(shadeMapping).map(([shade, mapped]) => {
       const source = invert ? mapped : shade;
       return `  --color-${color}-${shade}: ${colors[color][source]};`;
-    }),
+    })
   );
 
 const css = `@theme {

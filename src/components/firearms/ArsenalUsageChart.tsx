@@ -34,7 +34,7 @@ export default function ArsenalTrendWidget() {
         "get_time_grouped_ammo_trend",
         {
           time_grain: grain,
-        },
+        }
       );
 
       if (!error && data) {
@@ -47,7 +47,7 @@ export default function ArsenalTrendWidget() {
             // Calculate the week number
             const start = new Date(date.getFullYear(), 0, 1);
             const days = Math.floor(
-              (date.getTime() - start.getTime()) / 86400000,
+              (date.getTime() - start.getTime()) / 86400000
             );
             const weekNumber = Math.ceil((days + start.getDay() + 1) / 7);
 
@@ -82,24 +82,24 @@ export default function ArsenalTrendWidget() {
   const showLabels = chartData.length <= 12;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-md shadow-sm p-4 sm:p-5 flex flex-col col-span-1 sm:col-span-2 gap-4 h-full min-h-100">
+    <div className="col-span-1 flex h-full min-h-100 flex-col gap-4 rounded-md border border-gray-200 bg-white p-4 shadow-sm sm:col-span-2 sm:p-5">
       {/* HEADER & CONTROLS */}
       <div className="flex flex-col justify-between gap-4 border-b border-gray-100 pb-3">
         <div className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-purple-500" />
-          <h3 className="font-bold text-lg tracking-tight text-gray-900">
+          <h3 className="text-lg font-bold tracking-tight text-gray-900">
             Ammunition Trend
           </h3>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* 1. THE METRIC SWITCH (Ammunition vs Cumulative) */}
-          <div className="flex items-center bg-gray-50 p-1 rounded-lg border border-gray-200">
+          <div className="flex items-center rounded-lg border border-gray-200 bg-gray-50 p-1">
             <button
               onClick={() => setMetric("ammo")}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
                 metric === "ammo"
-                  ? "bg-white text-blue-600 shadow-sm border border-gray-200"
+                  ? "border border-gray-200 bg-white text-blue-600 shadow-sm"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -107,9 +107,9 @@ export default function ArsenalTrendWidget() {
             </button>
             <button
               onClick={() => setMetric("cumulative")}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
                 metric === "cumulative"
-                  ? "bg-white text-purple-600 shadow-sm border border-gray-200"
+                  ? "border border-gray-200 bg-white text-purple-600 shadow-sm"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -121,7 +121,7 @@ export default function ArsenalTrendWidget() {
           <select
             value={grain}
             onChange={(e) => setGrain(e.target.value as any)}
-            className="text-sm border border-gray-200 bg-gray-50 text-gray-700 rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-purple-600 focus:outline-none cursor-pointer"
+            className="cursor-pointer rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm text-gray-700 focus:ring-1 focus:ring-purple-600 focus:outline-none"
           >
             <option value="week">Weekly</option>
             <option value="month">Monthly</option>
@@ -131,9 +131,9 @@ export default function ArsenalTrendWidget() {
       </div>
 
       {/* RECHARTS VISUALIZATION */}
-      <div className="flex-1 w-full h-full min-h-75 mt-2 text-sm">
+      <div className="mt-2 h-full min-h-75 w-full flex-1 text-sm">
         {chartData.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-gray-400 italic">
+          <div className="flex h-full items-center justify-center text-gray-400 italic">
             Loading trend data...
           </div>
         ) : (

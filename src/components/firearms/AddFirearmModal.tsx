@@ -124,22 +124,22 @@ export default function AddFirearmModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+        className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-purple-700"
       >
         <Plus className="h-4 w-4" />
         Add Firearm
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h3 className="font-bold text-lg text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
+          <div className="animate-in fade-in zoom-in-95 w-full max-w-md overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl duration-200">
+            <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-5 py-4">
+              <h3 className="text-lg font-bold text-gray-900">
                 Add New Firearm
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-700 transition-colors"
+                className="text-gray-400 transition-colors hover:text-gray-700"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -147,7 +147,7 @@ export default function AddFirearmModal() {
 
             <form
               onSubmit={handleSubmit}
-              className="p-5 flex flex-col gap-4 max-h-[80vh] overflow-y-auto"
+              className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5"
             >
               {/* --- NEW: IMAGE UPLOAD BOX --- */}
               <div className="flex flex-col gap-1.5">
@@ -156,10 +156,10 @@ export default function AddFirearmModal() {
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:bg-gray-50 hover:border-purple-400 hover:text-purple-600 transition-colors cursor-pointer"
+                  className="flex h-24 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-500 transition-colors hover:border-purple-400 hover:bg-gray-50 hover:text-purple-600"
                 >
-                  <UploadCloud className="h-6 w-6 mb-1" />
-                  <span className="text-xs font-medium text-center px-2">
+                  <UploadCloud className="mb-1 h-6 w-6" />
+                  <span className="px-2 text-center text-xs font-medium">
                     {imageFile ? imageFile.name : "Click to upload image"}
                   </span>
                 </div>
@@ -186,7 +186,7 @@ export default function AddFirearmModal() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-sm text-gray-900 bg-white"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
@@ -200,7 +200,7 @@ export default function AddFirearmModal() {
                   onChange={(e) =>
                     setFormData({ ...formData, caliber: e.target.value })
                   }
-                  className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white ${formData.caliber === "" ? "text-gray-500" : "text-gray-900"}`}
+                  className={`w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none ${formData.caliber === "" ? "text-gray-500" : "text-gray-900"}`}
                 >
                   <option value="" disabled>
                     Select caliber...
@@ -228,11 +228,11 @@ export default function AddFirearmModal() {
                   onChange={(e) =>
                     setFormData({ ...formData, purchase_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-sm text-gray-900 bg-white"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
               <div className="flex gap-4">
-                <div className="flex flex-col gap-1.5 w-1/2">
+                <div className="flex w-1/2 flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">
                     Price (PLN)
                   </label>
@@ -245,10 +245,10 @@ export default function AddFirearmModal() {
                     onChange={(e) =>
                       setFormData({ ...formData, price: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 text-gray-900 bg-white"
+                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:ring-1 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
-                <div className="flex flex-col gap-1.5 w-1/2">
+                <div className="flex w-1/2 flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">
                     Store / Vendor
                   </label>
@@ -260,24 +260,24 @@ export default function AddFirearmModal() {
                     onChange={(e) =>
                       setFormData({ ...formData, vendor: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 text-gray-900 bg-white"
+                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:ring-1 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Footer Actions */}
-              <div className="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+              <div className="mt-4 flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-purple-700 disabled:opacity-50"
                 >
                   {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isSubmitting ? "Saving..." : "Save Firearm"}

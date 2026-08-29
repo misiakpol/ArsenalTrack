@@ -22,23 +22,23 @@ export default async function FirearmsPage() {
   // 2. Render the layout shell and pass data to the child components
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col sm:flex-row gap-1 sm:gap-6 items-center justify-center sm:justify-between">
+      <div className="flex flex-col items-center justify-center gap-1 sm:flex-row sm:justify-between sm:gap-6">
         <div className="flex items-center gap-4">
-        <GunIcon className="w-10 h-10 text-purple-500 " />
-        <div className="flex flex-col items-center sm:items-baseline gap-1 mb-3 sm:mb-0">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Firearms Management
-          </h2>
-          <p className="text-sm text-gray-500 text-center sm:text-left">
-            Manage your arsenal, view values, and track maintenance.
-          </p>
-        </div>
+          <GunIcon className="h-10 w-10 text-purple-500" />
+          <div className="mb-3 flex flex-col items-center gap-1 sm:mb-0 sm:items-baseline">
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+              Firearms Management
+            </h2>
+            <p className="text-center text-sm text-gray-500 sm:text-left">
+              Manage your arsenal, view values, and track maintenance.
+            </p>
+          </div>
         </div>
         <AddFirearmModal />
       </div>
 
       {/* Grid Layout for Modular Components */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-3">
+      <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
         {/* Pass the fetched data directly into your new widget */}
         <FirearmListWidget firearms={firearms || []} />
         <MaintenanceWidget summary={summary || []} />

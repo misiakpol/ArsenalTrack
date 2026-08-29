@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} min-h-full flex flex-col`}>
+      <body className={`${inter.variable} flex min-h-full flex-col`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

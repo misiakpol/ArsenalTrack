@@ -10,14 +10,16 @@ export default function AddExpenseModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pastExpenses, setPastExpenses] = useState<any[]>([]);
-  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
   const [uniqueProducts, setUniqueProducts] = useState<string[]>([]);
   const [uniqueStores, setUniqueStores] = useState<string[]>([]);
 
   // Fetch past expenses & categories when modal opens
   useEffect(() => {
     if (!isOpen) return;
-    
+
     async function fetchData() {
       const [expensesResponse, categoriesResponse] = await Promise.all([
         supabase
@@ -27,20 +29,20 @@ export default function AddExpenseModal() {
         supabase
           .from("expense_categories")
           .select("id, name")
-          .order("sort_order", { ascending: true })
+          .order("sort_order", { ascending: true }),
       ]);
-        
+
       if (expensesResponse.data) {
         setPastExpenses(expensesResponse.data);
-        
+
         // Extract unique lists for datalist suggestions
         const products = new Set<string>();
         const stores = new Set<string>();
-        expensesResponse.data.forEach(d => {
+        expensesResponse.data.forEach((d) => {
           if (d.product) products.add(d.product);
           if (d.store) stores.add(d.store);
         });
-        
+
         setUniqueProducts(Array.from(products));
         setUniqueStores(Array.from(stores));
       }
@@ -49,7 +51,7 @@ export default function AddExpenseModal() {
         setCategories(categoriesResponse.data);
       }
     }
-    
+
     fetchData();
   }, [isOpen]);
 
@@ -83,9 +85,9 @@ export default function AddExpenseModal() {
     const { error: expenseError } = await supabase.from("expenses").insert([
       {
         product: formData.product,
-        category_id: formData.category_id, 
+        category_id: formData.category_id,
         store: formData.store || "Unknown",
-        expense_date: formData.expense_date, 
+        expense_date: formData.expense_date,
         unit_cost: Number(formData.total_cost) / Number(formData.quantity),
         quantity: Number(formData.quantity),
       },
@@ -115,25 +117,25 @@ export default function AddExpenseModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+        className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-purple-700"
       >
         <Plus className="h-4 w-4" />
         Add Expense
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
+          <div className="animate-in fade-in zoom-in-95 w-full max-w-md overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl duration-200">
+            <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-5 py-4">
               <div className="flex items-center gap-2">
                 <Receipt className="h-5 w-5 text-purple-600" />
-                <h3 className="font-bold text-lg text-gray-900">
+                <h3 className="text-lg font-bold text-gray-900">
                   Add New Expense
                 </h3>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-700 transition-colors"
+                className="text-gray-400 transition-colors hover:text-gray-700"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -141,7 +143,7 @@ export default function AddExpenseModal() {
 
             <form
               onSubmit={handleSubmit}
-              className="p-5 flex flex-col gap-4 max-h-[80vh] overflow-y-auto"
+              className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5"
             >
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">
@@ -156,7 +158,7 @@ export default function AddExpenseModal() {
                   onChange={(e) =>
                     setFormData({ ...formData, product: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-sm text-gray-900 bg-white"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
@@ -169,16 +171,24 @@ export default function AddExpenseModal() {
                   value={formData.category_id}
                   onChange={(e) => {
                     const newCategoryId = e.target.value;
-                    const lastOfCategory = pastExpenses.find(exp => exp.category_id === newCategoryId);
-                    setFormData(prev => ({ 
-                      ...prev, 
+                    const lastOfCategory = pastExpenses.find(
+                      (exp) => exp.category_id === newCategoryId
+                    );
+                    setFormData((prev) => ({
+                      ...prev,
                       category_id: newCategoryId,
                       // Only auto-fill if the user hasn't already typed something
-                      product: prev.product.trim() === "" ? (lastOfCategory?.product || prev.product) : prev.product,
-                      store: prev.store.trim() === "" ? (lastOfCategory?.store || prev.store) : prev.store
+                      product:
+                        prev.product.trim() === ""
+                          ? lastOfCategory?.product || prev.product
+                          : prev.product,
+                      store:
+                        prev.store.trim() === ""
+                          ? lastOfCategory?.store || prev.store
+                          : prev.store,
                     }));
                   }}
-                  className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-sm bg-white ${formData.category_id === "" ? "text-gray-500" : "text-gray-900"}`}
+                  className={`w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none ${formData.category_id === "" ? "text-gray-500" : "text-gray-900"}`}
                 >
                   <option value="" disabled>
                     Select category...
@@ -202,12 +212,12 @@ export default function AddExpenseModal() {
                   onChange={(e) =>
                     setFormData({ ...formData, expense_date: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-sm text-gray-900 bg-white"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               <div className="flex gap-4">
-                <div className="flex flex-col gap-1.5 w-1/2">
+                <div className="flex w-1/2 flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">
                     Total Price (PLN)
                   </label>
@@ -220,10 +230,10 @@ export default function AddExpenseModal() {
                     onChange={(e) =>
                       setFormData({ ...formData, total_cost: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 text-gray-900 bg-white"
+                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:ring-1 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
-                <div className="flex flex-col gap-1.5 w-1/2">
+                <div className="flex w-1/2 flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">
                     Quantity
                   </label>
@@ -238,7 +248,7 @@ export default function AddExpenseModal() {
                         quantity: parseInt(e.target.value) || 1,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 text-gray-900 bg-white"
+                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:ring-1 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -256,23 +266,23 @@ export default function AddExpenseModal() {
                   onChange={(e) =>
                     setFormData({ ...formData, store: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 text-gray-900 bg-white"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:ring-1 focus:ring-purple-500 focus:outline-none"
                 />
               </div>
 
               {/* Footer Actions */}
-              <div className="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+              <div className="mt-4 flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-purple-700 disabled:opacity-50"
                 >
                   {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isSubmitting ? "Saving..." : "Save Expense"}
