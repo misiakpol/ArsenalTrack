@@ -44,11 +44,12 @@ export default function SessionsTable({ logs, onDelete }: SessionsTableProps) {
 
   return (
     <div className="mb-3 grid grid-cols-1 gap-2">
-      <BoxContainer title="Shooting Logs">
+      <BoxContainer title="Shooting Logs" noContentPadding>
         <div className="[&_tbody_tr:last-child]:!border-b-0 [&_tbody_tr:last-child_td]:!border-b-0">
           <DataTable
             classNames={{
-              header: "bg-gray-50 [&_th]:!py-5",
+              header: "bg-gray-50/50 [&_th]:!py-3 border-b border-gray-200",
+              root: "[&_th:first-child]:!pl-6 [&_td:first-child]:!pl-6 [&_th:last-child]:!pr-6 [&_td:last-child]:!pr-6",
             }}
             striped
             highlightOnHover

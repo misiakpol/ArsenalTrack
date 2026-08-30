@@ -5,14 +5,16 @@ const boxContainer = ({
   icon,
   title,
   children,
+  noContentPadding = false,
 }: {
   icon?: React.ReactNode;
   title: string;
   children: React.ReactNode;
+  noContentPadding?: boolean;
 }) => {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="mb-4 flex items-center gap-3">
+    <div className={cn("rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden", !noContentPadding && "p-4")}>
+      <div className={cn("flex items-center gap-3", noContentPadding ? "p-4 border-b border-gray-100" : "mb-4")}>
         {icon && React.isValidElement(icon)
           ? React.cloneElement(icon as React.ReactElement<any>, {
               className: cn(
@@ -25,7 +27,7 @@ const boxContainer = ({
           {title}
         </h2>
       </div>
-      <div className="border-t border-gray-100 pt-4">{children}</div>
+      <div className={cn(!noContentPadding && "border-t border-gray-100 pt-4")}>{children}</div>
     </div>
   );
 };

@@ -74,8 +74,8 @@ export default function TrainingLogsTable({
 
   return (
     <div className="mb-3 grid grid-cols-1 gap-2">
-      <BoxContainer title="Training Logs" icon={<List className="h-4 w-4" />}>
-        <div className="flex items-center pb-4">
+      <BoxContainer title="Training Logs" icon={<List className="h-4 w-4" />} noContentPadding>
+        <div className="flex items-center p-4 border-b border-gray-100">
           <div className="black relative w-full max-w-sm">
             <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
             <Input
@@ -89,7 +89,8 @@ export default function TrainingLogsTable({
         <div className="[&_tbody_tr:last-child]:!border-b-0 [&_tbody_tr:last-child_td]:!border-b-0">
           <DataTable
             classNames={{
-              header: "bg-gray-50 [&_th]:!py-5",
+              header: "bg-gray-50/50 [&_th]:!py-3 border-b border-gray-200",
+              root: "[&_th:first-child]:!pl-6 [&_td:first-child]:!pl-6 [&_th:last-child]:!pr-6 [&_td:last-child]:!pr-6",
             }}
             striped
             highlightOnHover
