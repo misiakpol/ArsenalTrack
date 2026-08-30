@@ -21,3 +21,54 @@ body,
   @apply bg-gray-50;
   @apply text-gray-900;
 }
+
+/* Sync Mantine colors with our Tailwind theme variables */
+:root, [data-mantine-color-scheme="light"] {
+  --mantine-color-body: var(--color-gray-50);
+  --mantine-color-text: var(--color-gray-900);
+  --mantine-color-default: var(--color-white);
+  --mantine-color-default-hover: var(--color-gray-50);
+  --mantine-color-default-color: var(--color-gray-900);
+  --mantine-color-default-border: var(--color-gray-200);
+  
+  --mantine-color-gray-0: var(--color-gray-50);
+  --mantine-color-gray-1: var(--color-gray-100);
+  --mantine-color-gray-2: var(--color-gray-200);
+  --mantine-color-gray-3: var(--color-gray-300);
+  --mantine-color-gray-4: var(--color-gray-400);
+  --mantine-color-gray-5: var(--color-gray-500);
+  --mantine-color-gray-6: var(--color-gray-600);
+  --mantine-color-gray-7: var(--color-gray-700);
+  --mantine-color-gray-8: var(--color-gray-800);
+  --mantine-color-gray-9: var(--color-gray-900);
+}
+
+.dark, [data-mantine-color-scheme="dark"] {
+  --mantine-color-body: var(--color-gray-50);
+  --mantine-color-text: var(--color-gray-900);
+  --mantine-color-default: var(--color-white);
+  --mantine-color-default-hover: var(--color-gray-50);
+  --mantine-color-default-color: var(--color-gray-900);
+  --mantine-color-default-border: var(--color-gray-200);
+
+  --mantine-color-dark-0: var(--color-gray-900);
+  --mantine-color-dark-1: var(--color-gray-800);
+  --mantine-color-dark-2: var(--color-gray-700);
+  --mantine-color-dark-3: var(--color-gray-600);
+  --mantine-color-dark-4: var(--color-gray-500);
+  --mantine-color-dark-5: var(--color-gray-400);
+  --mantine-color-dark-6: var(--color-gray-200);
+  --mantine-color-dark-7: var(--color-white);
+  --mantine-color-dark-8: var(--color-white);
+  --mantine-color-dark-9: var(--color-white);
+}
+
+/* Remove bottom border from the last row of datatables */
+.mantine-datatable-table tbody tr:last-of-type,
+.mantine-datatable-table tbody tr:last-of-type td,
+.mantine-Table-tbody tr:last-child td,
+.mantine-Table-tbody tr:last-child,
+.mantine-Table-tr:last-child,
+.mantine-Table-tr:last-child td {
+  border-bottom: none !important;
+}

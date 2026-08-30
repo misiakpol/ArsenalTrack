@@ -1,232 +1,157 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import BoxContainer from "@/components/boxContainer";
-import { Trash, ArrowUpDown, Search } from "lucide-react";
+import { Trash, Search, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { TrainingLog } from "@/types";
-import {
-  ColumnDef,
-  flexRender,
-  createCoreRowModel,
-  createSortedRowModel,
-  createFilteredRowModel,
-  SortingState,
-  useTable,
-} from "@tanstack/react-table";
+import { DataTable, DataTableSortStatus } from "mantine-datatable";
 
 interface TrainingLogsTableProps {
   logs: TrainingLog[];
   onDelete: (id: string) => void;
 }
 
-export default function TrainingLogsTable({ logs, onDelete }: TrainingLogsTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+export default function TrainingLogsTable({
+  logs,
+  onDelete,
+}: TrainingLogsTableProps) {
+  const [sortStatus, setSortStatus] = useState<
+    DataTableSortStatus<TrainingLog>
+  >({
+    columnAccessor: "session_date",
+    direction: "desc",
+  });
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const columns: ColumnDef<TrainingLog>[] = [
-    {
-      accessorKey: "session_date",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="-ml-4"
-          >
-            Date
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
-        const date = new Date(row.getValue("session_date"));
-        return <div className="font-medium">{date.toLocaleDateString()}</div>;
-      },
-    },
-    {
-      accessorKey: "firearm_id",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="-ml-4"
-          >
-            Firearm
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
-        const firearmName = row.original.firearms?.name;
-        return <div>{firearmName || row.getValue("firearm_id")}</div>;
-      },
-    },
-    {
-      accessorKey: "shooter_name",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="-ml-4"
-          >
-            Shooter
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => <div>{row.getValue("shooter_name")}</div>,
-    },
-    {
-      accessorKey: "drill_type",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="-ml-4"
-          >
-            Drill
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => <div>{row.getValue("drill_type")}</div>,
-    },
-    {
-      accessorKey: "distance_m",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="-ml-4"
-          >
-            Distance (m)
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => <div>{row.getValue("distance_m")}</div>,
-    },
-    {
-      id: "score",
-      accessorFn: (row) => `${row.score} / ${row.max_score}`,
-      header: "Score",
-      cell: ({ row }) => {
-        const score = row.original.score;
-        const max = row.original.max_score;
-        return <div>{score} / {max}</div>;
-      },
-    },
-    {
-      id: "actions",
-      header: () => <div className="text-right">Actions</div>,
-      cell: ({ row }) => {
-        const log = row.original;
-        return (
-          <div className="text-right">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onDelete(log.id)}
-              className="text-red-500 hover:bg-red-50 hover:text-red-700"
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
+  const processedLogs = useMemo(() => {
+    let result = [...logs];
 
-  const table = useTable({
-    data: logs,
-    columns,
-    features: [
-      createCoreRowModel(),
-      createSortedRowModel(),
-      createFilteredRowModel(),
-    ],
-    state: {
-      sorting,
-      globalFilter,
-    },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-  });
+    // Handle global filtering
+    if (globalFilter) {
+      const lowerQuery = globalFilter.toLowerCase();
+      result = result.filter((log) => {
+        return (
+          new Date(log.session_date)
+            .toLocaleDateString()
+            .toLowerCase()
+            .includes(lowerQuery) ||
+          (log.firearms?.name || log.firearm_id)
+            .toLowerCase()
+            .includes(lowerQuery) ||
+          (log.shooter_name || "").toLowerCase().includes(lowerQuery) ||
+          (log.drill_type || "").toLowerCase().includes(lowerQuery) ||
+          (log.distance_m?.toString() || "")
+            .toLowerCase()
+            .includes(lowerQuery) ||
+          `${log.score} / ${log.max_score}`.includes(lowerQuery)
+        );
+      });
+    }
+
+    // Handle sorting
+    result.sort((a, b) => {
+      const accessor = sortStatus.columnAccessor as keyof TrainingLog;
+      let aValue: any = a[accessor];
+      let bValue: any = b[accessor];
+
+      if (accessor === "session_date") {
+        aValue = new Date(a.session_date).getTime();
+        bValue = new Date(b.session_date).getTime();
+      } else if (sortStatus.columnAccessor === "firearms.name") {
+        aValue = a.firearms?.name || a.firearm_id;
+        bValue = b.firearms?.name || b.firearm_id;
+      }
+
+      if (aValue === bValue) return 0;
+      const compareResult = aValue < bValue ? -1 : 1;
+      return sortStatus.direction === "asc" ? compareResult : -compareResult;
+    });
+
+    return result;
+  }, [logs, sortStatus, globalFilter]);
 
   return (
     <div className="mb-3 grid grid-cols-1 gap-2">
-      <BoxContainer title="Training Logs">
+      <BoxContainer title="Training Logs" icon={<List className="h-4 w-4" />}>
         <div className="flex items-center pb-4">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="black relative w-full max-w-sm">
+            <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
             <Input
               placeholder="Search training logs..."
-              value={globalFilter ?? ""}
+              value={globalFilter}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className="pl-8"
             />
           </div>
         </div>
-        <div className="rounded-md border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getAllCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
+        <div className="[&_tbody_tr:last-child]:!border-b-0 [&_tbody_tr:last-child_td]:!border-b-0">
+          <DataTable
+            classNames={{
+              header: "bg-gray-50 [&_th]:!py-5",
+            }}
+            striped
+            highlightOnHover
+            minHeight={150}
+            emptyState="No training logs recorded yet."
+            records={processedLogs}
+            sortStatus={sortStatus}
+            onSortStatusChange={setSortStatus}
+            columns={[
+              {
+                accessor: "session_date",
+                title: "Date",
+                sortable: true,
+                render: (record) => (
+                  <div className="font-medium">
+                    {new Date(record.session_date).toLocaleDateString()}
+                  </div>
+                ),
+              },
+              {
+                accessor: "firearms.name",
+                title: "Firearm",
+                sortable: true,
+                render: (record) => record.firearms?.name || record.firearm_id,
+              },
+              {
+                accessor: "shooter_name",
+                title: "Shooter",
+                sortable: true,
+              },
+              {
+                accessor: "drill_type",
+                title: "Drill",
+                sortable: true,
+              },
+              {
+                accessor: "distance_m",
+                title: "Distance (m)",
+                sortable: true,
+              },
+              {
+                accessor: "score",
+                title: "Score",
+                render: (record) => `${record.score} / ${record.max_score}`,
+              },
+              {
+                accessor: "actions",
+                title: "Actions",
+                textAlign: "right",
+                render: (record) => (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(record.id)}
+                    className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-700"
                   >
-                    No training logs recorded yet.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                ),
+              },
+            ]}
+          />
         </div>
       </BoxContainer>
     </div>

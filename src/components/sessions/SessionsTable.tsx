@@ -1,18 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useMemo } from "react";
 import BoxContainer from "@/components/boxContainer";
 import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { ShootingLog } from "@/types";
+import { DataTable, DataTableSortStatus } from "mantine-datatable";
 
 interface SessionsTableProps {
   logs: ShootingLog[];
@@ -20,52 +13,89 @@ interface SessionsTableProps {
 }
 
 export default function SessionsTable({ logs, onDelete }: SessionsTableProps) {
+  const [sortStatus, setSortStatus] = useState<
+    DataTableSortStatus<ShootingLog>
+  >({
+    columnAccessor: "session_date",
+    direction: "desc",
+  });
+
+  const sortedLogs = useMemo(() => {
+    const result = [...logs];
+    result.sort((a, b) => {
+      const accessor = sortStatus.columnAccessor as keyof ShootingLog;
+      let aValue: any = a[accessor];
+      let bValue: any = b[accessor];
+
+      if (accessor === "session_date") {
+        aValue = new Date(a.session_date).getTime();
+        bValue = new Date(b.session_date).getTime();
+      } else if (sortStatus.columnAccessor === "firearms.name") {
+        aValue = a.firearms?.name || a.firearm_id;
+        bValue = b.firearms?.name || b.firearm_id;
+      }
+
+      if (aValue === bValue) return 0;
+      const compareResult = aValue < bValue ? -1 : 1;
+      return sortStatus.direction === "asc" ? compareResult : -compareResult;
+    });
+    return result;
+  }, [logs, sortStatus]);
+
   return (
     <div className="mb-3 grid grid-cols-1 gap-2">
       <BoxContainer title="Shooting Logs">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Firearm</TableHead>
-                <TableHead>Rounds Fired</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {logs.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="h-24 text-center text-gray-500"
+        <div className="[&_tbody_tr:last-child]:!border-b-0 [&_tbody_tr:last-child_td]:!border-b-0">
+          <DataTable
+            classNames={{
+              header: "bg-gray-50 [&_th]:!py-5",
+            }}
+            striped
+            highlightOnHover
+            minHeight={150}
+            emptyState="No sessions recorded yet."
+            records={sortedLogs}
+            sortStatus={sortStatus}
+            onSortStatusChange={setSortStatus}
+            columns={[
+              {
+                accessor: "session_date",
+                title: "Date",
+                sortable: true,
+                render: (record) => (
+                  <div className="font-medium" suppressHydrationWarning>
+                    {new Date(record.session_date).toLocaleDateString()}
+                  </div>
+                ),
+              },
+              {
+                accessor: "firearms.name",
+                title: "Firearm",
+                sortable: true,
+                render: (record) => record.firearms?.name || record.firearm_id,
+              },
+              {
+                accessor: "rounds_fired",
+                title: "Rounds Fired",
+                sortable: true,
+              },
+              {
+                accessor: "actions",
+                title: "Actions",
+                textAlign: "right",
+                render: (record) => (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(record.id)}
+                    className="h-8 w-8 text-red-500 hover:bg-red-100 hover:text-red-700"
                   >
-                    No sessions recorded yet.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                logs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell className="font-medium" suppressHydrationWarning>
-                      {new Date(log.session_date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>{log.firearms?.name || log.firearm_id}</TableCell>
-                    <TableCell>{log.rounds_fired}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onDelete(log.id)}
-                        className="text-red-500 hover:bg-red-50 hover:text-red-700"
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                ),
+              },
+            ]}
+          />
         </div>
       </BoxContainer>
     </div>
