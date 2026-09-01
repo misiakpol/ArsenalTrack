@@ -98,26 +98,30 @@ export default function AddSessionModal({ isOpen, setIsOpen, onAdd }: AddSession
     }
   }, [createTrainingLog]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firearmId || !sessionDate || !roundsFired) return;
     setIsSubmitting(true);
 
-    // Mocking async submission
-    setTimeout(() => {
-      const firearmName = firearms.find(f => f.id === firearmId)?.name || firearmId;
-      
-      const newLog: ShootingLog = {
-        id: Math.random().toString(36).substring(2, 9),
-        firearm_id: firearmName, // Mocking display name for now
-        session_date: sessionDate,
-        rounds_fired: parseInt(roundsFired),
-        created_at: new Date().toISOString(),
-      };
+    try {
+      const { data: insertedShootingLog, error: shootingLogError } = await supabase
+        .from("shooting_logs")
+        .insert({
+          firearm_id: firearmId,
+          session_date: sessionDate,
+          rounds_fired: parseInt(roundsFired),
+        })
+        .select(`
+          *,
+          firearms ( name )
+        `)
+        .single();
 
-      let tLogsToCreate = undefined;
-      if (createTrainingLog) {
-        tLogsToCreate = trainingLogs.map(log => ({
+      if (shootingLogError) throw shootingLogError;
+
+      let insertedTrainingLogs = undefined;
+      if (createTrainingLog && trainingLogs.length > 0) {
+        const tLogsToInsert = trainingLogs.map((log) => ({
           firearm_id: firearmId,
           session_date: sessionDate,
           shooter_name: log.shooterName,
@@ -126,11 +130,21 @@ export default function AddSessionModal({ isOpen, setIsOpen, onAdd }: AddSession
           score: parseFloat(log.score),
           max_score: parseFloat(log.maxScore),
         }));
+
+        const { data: tLogsData, error: tLogsError } = await supabase
+          .from("training_logs")
+          .insert(tLogsToInsert)
+          .select(`
+            *,
+            firearms ( name )
+          `);
+
+        if (tLogsError) throw tLogsError;
+        insertedTrainingLogs = tLogsData;
       }
+
+      onAdd(insertedShootingLog, insertedTrainingLogs);
       
-      onAdd(newLog, tLogsToCreate);
-      
-      setIsSubmitting(false);
       setIsOpen(false);
       
       // Reset form
@@ -139,7 +153,12 @@ export default function AddSessionModal({ isOpen, setIsOpen, onAdd }: AddSession
       setRoundsFired("");
       setCreateTrainingLog(false);
       setTrainingLogs([]);
-    }, 300);
+    } catch (error) {
+      console.error("Error adding session:", error);
+      alert("Failed to add session. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
